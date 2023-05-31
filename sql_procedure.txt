@@ -1,0 +1,23 @@
+P1. Xuất ra toàn bộ danh sách giáo viên. 
+P2. Tính số lượng đề tài mà một giáo viênđang thực hiện.  
+P3. In thông tin chi tiết của một giáo viên(sử dụng lệnh print): 
+Thông tin cá nhân, Số lượng đề tài tham gia, Số lượng thân nhân của giáo viên đó. 
+P4. Kiểm tra xem một giáo viên có tồn tại hay không (dựa vào HOTEN, NGSINH, DIACHI). 
+P5. Kiểm tra quy định của một giáo viên: 
+Chỉ được thực hiện các đề tài mà bộ môn của giáo viên đó làm chủ nhiệm. 
+P6. Thực hiện thêm một phân công cho giáo viên thực hiện một công việc của đề tài: 
+	o Kiểm tra thông tin đầu vào hợp lệ: giáo viên phải tồn tại, 
+công việc phải tồn tại, thời gian tham gia phải >0 
+	o Giáo viên chỉ tham gia đề tài cùng bộ môn với giáo viên làm chủ nhiệm đề tài đó.. 
+P7. Thực hiện xoá một giáo viên theo mã. Nếu giáo viên có thông tin 
+liên quan (Có thân nhân, có làm đề tài, …) thì báo lỗi. 
+P8. In ra danh sách giáo viên của một phòng ban nào đó cùng với số lượng 
+đề tài mà giáo viên tham gia, số thân nhân, 
+số giáo viên mà giáo viên đó quản lý nếu có, … 
+P9. Kiểm tra quy định của 2 giáo viên a, b: Nếu a là trưởng bộ môn của b 
+thì lương của a phải cao hơn lương của b. (a, b: mã giáo viên) 
+P10. Khi thêm một giáo viên cần kiểm tra các quy định: 
+Không trùng tên, tuổi > 18, lương > 0 
+P11. Mã giáo viên được phát sinh tự động theo quy tắc: 
+Nếu đã có giáo viên 001, 002, 003 thì MAGV của giáo viên mới sẽ là 004. 
+Nếu đã có giáo viên 001, 002, 005 thì MAGV của giáo viên mới là 003.
