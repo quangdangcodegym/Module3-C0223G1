@@ -1,0 +1,107 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial, Tahoma;
+    font-size: 12px;
+}
+.container{
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+.head{
+    overflow: auto;
+}
+.head-logo{
+    float: left;
+    width: 30%;
+    padding: 50px;
+    height: 50px;
+    background-color: aquamarine;
+}
+.banner{
+    float: left;
+    width: 70%;
+    height: 50px;
+    background-color: bisque;
+}
+.menu{
+    overflow: auto;
+    padding: 5px 0px;
+}
+.menu-left{
+
+}
+ul.menu-left{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+ul.menu-left li{
+    float: left;
+    margin-right: 10px;
+}
+.menu-right{
+    float: right;
+}
+.main{
+    overflow: auto;
+}
+.col-2{
+    width: 16.6667%;
+}
+.left-bar{
+    background-color: bisque;
+    float: left;
+}
+.col-8{
+    width: 66.6667%;
+}
+.content{
+    background-color: rgb(234, 132, 8);
+    float: left;
+}
+.right-bar{
+    background-color: bisque;
+    height: 100px;
+    float: left;
+}
+
+.col-6{
+    width: 50%;
+}
+.hot-new{
+    background-color: aqua;
+    height: 50px;
+    float: left;
+}
+.slide{
+    background-color: rgb(156, 251, 2);
+    height: 50px;
+    float: left;
+}
+.content-head{
+    overflow: auto;
+}
+.col-4{
+    width: 33.3333%;
+}
+.content-newitem1{
+    background-color: bisque;
+    height: 300px;
+    float: left;
+}
+.content-newitem2{
+    background-color: rgb(251, 138, 0);
+    height: 300px;
+    float: left;
+}
+.content-newitem3{
+    background-color: rgb(159, 89, 3);
+    height: 300px;
+    float: left;
+}
+.content-news-row{
+    overflow: hidden;
+}

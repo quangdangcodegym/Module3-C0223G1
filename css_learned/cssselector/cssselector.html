@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /*
+        - Tên thành phần html: p, h1, ul, li
+        - thuộc tính id #idname
+        - thuộc tính class .classname
+        - thuộc tính bất kì: [thuoctinh=value]
+          [href=https://toihocdesignpattern.com/]
+          [title=hello]
+          [href] // khong co value cung duoc
+          input[name=txtName] //chi dinh den the input
+        */
+        /* Áp dụng dấu , để lấy nhiều thẻ (element) 
+        p, h1{
+            color: red;
+        }
+        */
+        /* Dau khoang trang: lấy tất cả con cháu 
+        div p{
+            color: blue;
+        }
+        */
+        /* Dau khoang trang: CHỈ lấy con thôi 
+        div>p{
+            color: blue;
+        }
+        */
+        /* 
+        - Lấy anh em
+        Lấy thẻ p là anh em gần nhất (ngay sau thẻ div)
+        div+p{
+            color: red;
+        }
+        */
+        /*
+        - Lấy tất cả anh em 
+        Lấy toàn bộ tất cả thẻ p là anh em của div
+        
+        div ~ p{
+            color: blue;
+        }
+        */
+        /* 
+        Khai báo class
+        */
+        ul > li:nth-child(5){
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <section>
+        <h1>TEST 1</h1>
+        <div>
+            <p>TEST 2</p>
+            <p>TEST 3</p>
+            <ul id="1" name="aa" style="" >
+                <li><p>AC</p></li>
+                <li><p>DEF</p></li>
+                <li><p>AC</p></li>
+                <li><p>DEF</p></li>
+                <li><p>AC</p></li>
+                <li><p>DEF</p></li>
+                <li><p>AC</p></li>
+                <li><p>DEF</p></li>
+            </ul>
+        </div>
+        <p>TEST 4</p>
+        <p>TEST 6</p>
+    </section>
+</body>
+</html>

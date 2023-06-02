@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+                width:300px;
+                overflow:auto;
+                border:solid 2px black;
+            }
+
+            .container > div {
+                width:90px; height:90px;
+                border:solid 1px red;
+                background:grey;
+                float:left;
+                color:white;
+            }
+            .container > #test{
+                width:120px; height:120px;
+                border:solid 1px blue;
+                background:rgb(246, 136, 136);
+                color:black;
+                /* float: none; */
+            }
+            .middle {
+                clear:both;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div class="left">Left Div<br>float: left; </div>
+        <div id="test">Test non float</div>
+        <div class="middle">Middle Div<br>float: left; clear:both; </div>
+        <div class="right">Right Div<br> float:left </div>
+        
+      </div>
+</body>
+</html>

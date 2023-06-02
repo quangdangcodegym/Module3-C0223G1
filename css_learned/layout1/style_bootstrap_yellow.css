@@ -1,0 +1,32 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-size: 12px;
+}
+.logo{
+    height: 50px;
+    background-color: bisque;
+}
+.banner{
+    
+    height: 50px;
+    background-color: rgb(246, 138, 6);
+}
+ul.menu-left{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+ul.menu-left li{
+    margin-right: 10px;
+}
+.menu{
+    margin-top: 10px;
+}
+.navbar-dark .navbar-nav .nav-link{
+    color: rgba(255,255,255,1);
+}
+
+.c1 .c2 .test_yellow{
+    color: yellow;
+}
