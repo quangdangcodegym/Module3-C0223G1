@@ -14,16 +14,22 @@ import java.util.Map;
 @WebServlet(name = "TranslateServlet", urlPatterns = "/translate")
 public class TranslateServlet extends HttpServlet {
 
+
+    private int MINMIN = 100;
     private Map<String,String> tudien;
     public TranslateServlet() {
         tudien = new HashMap<>();
         tudien.put("hello", "Xin chao");
         tudien.put("apple", "qua tao");
+        tudien.put("banana", "qua chuoi");
+
+
     }
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
 
         /**
          resp.setContentType("text/html");
@@ -85,6 +91,7 @@ public class TranslateServlet extends HttpServlet {
         String value = tudien.get(key.toLowerCase());       // value: 'Xin chao'
 
         req.setAttribute("value", value);
+        req.setAttribute("listVocabulary", tudien.keySet());
 
         RequestDispatcher requestDispatcher = req.getRequestDispatcher("/translate.jsp");
         requestDispatcher.forward(req, resp);

@@ -2,19 +2,29 @@ package com.codegym.helloservlet;
 
 import java.io.*;
 import java.util.Enumeration;
+import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 
 @WebServlet(name = "helloServlet", value = "/hello-servlet")
 public class HelloServlet extends HttpServlet {
-    private String message;
+    private String message = "Hello";
 
-    public void init() {
-        message = "Hello World!";
+    @Override
+    public void init() throws ServletException {
+        System.out.println("Khoi tao servlet");
+    }
+
+    @Override
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        super.service(req, resp);
+        System.out.println("Phuc vu Request gui toi");
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        System.out.println("Chay vao ham doGet");
+        /**
         Enumeration<String> enumeration = request.getHeaderNames();
 
         response.setContentType("text/html");
@@ -38,10 +48,12 @@ public class HelloServlet extends HttpServlet {
         out.println("</body></html>");
 
 
-        // Hello
+        **/
 
     }
 
     public void destroy() {
+
+        System.out.println("Huy servlet");
     }
 }
