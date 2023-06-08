@@ -2,6 +2,7 @@ package com.codegym.customermanager;
 
 import com.codegym.customermanager.model.Customer;
 import com.codegym.customermanager.service.CustomerServiceImpl;
+import com.codegym.customermanager.service.CustomerServiceImplMySql;
 import com.codegym.customermanager.service.ICustomerService;
 
 import javax.servlet.RequestDispatcher;
@@ -19,7 +20,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        iCustomerService = new CustomerServiceImpl();
+        iCustomerService = new CustomerServiceImplMySql();
     }
 
     @Override
@@ -30,12 +31,15 @@ public class CustomerServlet extends HttpServlet {
         }
         switch (action) {
             case "create":
+                System.out.println("Create............");
                 showFormCreate(req, resp);
                 break;
             case "edit":
+                System.out.println("Edit............");
                 showFromEdit(req, resp);
                 break;
             default:
+                System.out.println("Default............");
                 showCustomers(req, resp);
         }
 
