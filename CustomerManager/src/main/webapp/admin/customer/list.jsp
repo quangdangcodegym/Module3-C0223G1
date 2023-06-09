@@ -10,33 +10,44 @@
 <html>
 <head>
     <title>Title</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <jsp:include page="/admin/layout/head_css.jsp"></jsp:include>
+
 </head>
 <body>
-    <form method="post" id="frmHiden" action="/customers?action=delete">
-        <input type="hidden" id="txtIdEdit" name="idEdit"  />
-    </form>
-    <table border="1">
-        <tr>
-            <td>Name</td>
-            <td>Email</td>
-            <td>Address</td>
-            <td>Action</td>
-        </tr>
-
-        <c:forEach items="${requestScope.customers}" var="c">
+    <div class="container">
+        <form method="post" id="frmHiden" action="/customers?action=delete">
+            <input type="hidden" id="txtIdEdit" name="idEdit"  />
+        </form>
+        <table border="1" class="table table-hover">
             <tr>
-                <td>${c.getName()}</td>
-                <td>${c.getEmail()}</td>
-                <td>${c.getAddress()}</td>
-                <td>
-                    <a href="/customers?action=edit&id=${c.getId()}"><i class="fa-solid fa-pen-to-square"></i></a>
-                    <a href="/?action=edit" ><i class="fa-solid fa-trash"></i></a>
-                </td>
+                <td>Name</td>
+                <td>Email</td>
+                <td>Address</td>
+                <td>Type</td>
+                <td>Action</td>
             </tr>
-        </c:forEach>
-    </table>
+
+            <c:forEach items="${requestScope.customers}" var="c">
+                <tr>
+                    <td>${c.getName()}</td>
+                    <td>${c.getEmail()}</td>
+                    <td>${c.getAddress()}</td>
+                    <td>
+                            <%--                    <c:forEach items="${requestScope.customerTypes}" var="ct">--%>
+                            <%--                        <c:if test="${c.getTypeId() == ct.getId()}">--%>
+                            <%--                            ${ct.getName()}--%>
+                            <%--                        </c:if>--%>
+                            <%--                    </c:forEach>--%>
+                            ${c.getCustomerType().getName()}
+                    </td>
+                    <td>
+                        <a href="/customers?action=edit&id=${c.getId()}"><i class="fa-solid fa-pen-to-square"></i></a>
+                        <a href="/?action=edit" ><i class="fa-solid fa-trash"></i></a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
     <script>
         function handleDelete(id, name){
             document.getElementById("txtIdEdit").value = id;
@@ -46,5 +57,6 @@
             }
         }
     </script>
+    <jsp:include page="/admin/layout/js_footer.jsp"></jsp:include>
 </body>
 </html>

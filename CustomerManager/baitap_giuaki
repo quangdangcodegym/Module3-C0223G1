@@ -1,0 +1,4 @@
+- Làm bài tập CRUD dùng 2 bảng: product, category
+  + có validation
+  + có thông báo lỗi
+- Làm bài tập CRUD có validation USER -> dùng Enum cột Role

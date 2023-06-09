@@ -10,7 +10,16 @@ public class Customer {
     private Date createAt;
 
     private int typeId;
+    private CustomerType customerType;
 
+
+    public CustomerType getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(CustomerType customerType) {
+        this.customerType = customerType;
+    }
 
     public int getTypeId() {
         return typeId;
@@ -19,6 +28,8 @@ public class Customer {
     public void setTypeId(int typeId) {
         this.typeId = typeId;
     }
+
+
 
     public Customer() {
     }

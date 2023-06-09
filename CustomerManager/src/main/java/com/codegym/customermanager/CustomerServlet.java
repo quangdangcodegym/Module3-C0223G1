@@ -1,9 +1,9 @@
 package com.codegym.customermanager;
 
 import com.codegym.customermanager.model.Customer;
-import com.codegym.customermanager.service.CustomerServiceImpl;
-import com.codegym.customermanager.service.CustomerServiceImplMySql;
-import com.codegym.customermanager.service.ICustomerService;
+import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.service.*;
+import com.codegym.customermanager.utils.ValidateUtils;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -12,15 +12,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "CustomerServlet", urlPatterns = "/customers")
 public class CustomerServlet extends HttpServlet {
     private ICustomerService iCustomerService;
+    private ICustomerType iCustomerType;
 
     @Override
     public void init() throws ServletException {
         iCustomerService = new CustomerServiceImplMySql();
+        iCustomerType = new CustomerTypeimplMySql();
     }
 
     @Override
@@ -31,11 +35,9 @@ public class CustomerServlet extends HttpServlet {
         }
         switch (action) {
             case "create":
-                System.out.println("Create............");
                 showFormCreate(req, resp);
                 break;
             case "edit":
-                System.out.println("Edit............");
                 showFromEdit(req, resp);
                 break;
             default:
@@ -46,9 +48,12 @@ public class CustomerServlet extends HttpServlet {
     }
 
     private void showCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Customer> customers = iCustomerService.findAll();
+        List<Customer> customers = iCustomerService.findAll2();
+//        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+
 
         req.setAttribute("customers", customers);
+//        req.setAttribute("customerTypes", customerTypes);
         req.getRequestDispatcher(Config.URL_VIEW_ADMIN + "list.jsp").forward(req, resp);
 
     }
@@ -56,14 +61,21 @@ public class CustomerServlet extends HttpServlet {
     private void showFromEdit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
         Customer c = iCustomerService.findById(id);
+        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
 
         req.setAttribute("customer", c);
+        req.setAttribute("customerTypes", customerTypes);
         req.getRequestDispatcher(Config.URL_VIEW_ADMIN +  "edit.jsp").forward(req, resp);
     }
 
     private void showFormCreate(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(Config.URL_VIEW_ADMIN + "create.jsp");
         requestDispatcher.forward(req, resp);
+
     }
 
     @Override
@@ -101,36 +113,99 @@ public class CustomerServlet extends HttpServlet {
         resp.sendRedirect("/customers");
     }
 
-    private void editCustomer(HttpServletRequest req, HttpServletResponse resp) {
+    private void editCustomer(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+        List<String> errors = new ArrayList<>();
         int idCustomer = Integer.parseInt(req.getParameter("id"));
 
         Customer c = iCustomerService.findById(idCustomer);
-        String newName = req.getParameter("name");
-        String newEmail = req.getParameter("email");
+
+
+        validateInputName(req, errors, c);
+        validateInputEmail(req, errors, c);
+        validateInputCustomerType(req, errors, c);
+
         String newAddress = req.getParameter("address");
         c.setAddress(newAddress);
-        c.setEmail(newEmail);
-        c.setName(newName);
 
-        iCustomerService.update(c.getId(), c);
+        if (errors.isEmpty()) {
+            iCustomerService.update(c.getId(), c);
+            resp.sendRedirect("/customers");
+        }else{
+            req.setAttribute("customer", c);
+            req.setAttribute("errors", errors);
+
+            List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+            req.setAttribute("customerTypes", customerTypes);
+            RequestDispatcher requestDispatcher = req.getRequestDispatcher(Config.URL_VIEW_ADMIN + "edit.jsp");
+            requestDispatcher.forward(req, resp);
+
+        }
 
 
     }
 
     private void createCustomer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String name = req.getParameter("name");
-        String email = req.getParameter("email");
+        List<String> errors = new ArrayList<>();
+        Customer customer = new Customer();
+        validateInputName(req, errors, customer);
+        validateInputEmail(req, errors, customer);
+        validateInputCustomerType(req, errors, customer);
+
         String address = req.getParameter("address");
         //id, String name, String email, String address
         long id = System.currentTimeMillis() %100000;
-        Customer customer = new Customer( (int) id, name, email, address);
-        iCustomerService.save(customer);
+        customer.setCreateAt(new Date());
 
-
-        // req.setAttribute :: nhét thuộc tính với key và value vào request
-        req.setAttribute("message", "Thêm thành công");
-        // RequestDispatcher :: điều phối qua qua trang jsp
+        // Nếu rỗng thì cho lưu
+        if (errors.isEmpty()) {
+            // cho luu
+            iCustomerService.save(customer);
+            req.setAttribute("message", "Thêm thành công");
+        }else{
+            // báo lỗi
+            req.setAttribute("errors", errors);
+            req.setAttribute("customer", customer);
+        }
+        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+        req.setAttribute("customerTypes", customerTypes);
         RequestDispatcher requestDispatcher = req.getRequestDispatcher(Config.URL_VIEW_ADMIN +  "create.jsp");
         requestDispatcher.forward(req, resp);
+
+
+
+
+    }
+
+    private void validateInputCustomerType(HttpServletRequest req, List<String> errors, Customer customer) {
+        try {
+            int customerType = Integer.parseInt(req.getParameter("customertype"));
+            CustomerType ct = iCustomerType.findById(customerType);
+
+            if (ct == null) {
+                errors.add("Không tìm thấy loại khách hàng");
+                customer.setTypeId(1);
+            }else {
+                customer.setTypeId(customerType);
+            }
+        } catch (NumberFormatException numberFormatException) {
+            errors.add("Loại khách hàng không hợp lệ");
+        }
+
+    }
+
+    private void validateInputEmail(HttpServletRequest req, List<String> errors, Customer customer) {
+        String email = req.getParameter("email");
+        if (!ValidateUtils.isEmailValid(email)) {
+            errors.add("Email không hợp lệ");
+        }
+        customer.setEmail(email);
+    }
+
+    private void validateInputName(HttpServletRequest req, List<String> errors, Customer customer) {
+        String name = req.getParameter("name");
+        if (!ValidateUtils.isNameValid(name)) {
+            errors.add("Tên không hợp lệ. Tên phải từ 8-20 kí tự và bắt đầu là chữ cái");
+        }
+        customer.setName(name);
     }
 }
