@@ -2,6 +2,7 @@ package com.codegym.customermanager.service;
 
 import com.codegym.customermanager.model.Customer;
 import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.model.Pageable;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -9,10 +10,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerServiceImplMySql extends DBContext implements ICustomerService{
+    private static String SQL_ADVANCE_CUSTOMER = "SELECT c.*,ct.type, ct.delete_at\n" +
+            "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+            "where c.name like ? or c.email like ? or c.address like ?\n" +
+            "order by %s %s\n" +
+            "limit ?,?;";
+    private static  String SQL_ADVANCE_CUSTOMER_TOTAL = "SELECT count(*) as total \n" +
+            "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+            "where c.name like ? or c.email like ? or c.address like ?";
+
+    private static String SQL_ADVANCE_CUSTOMER_FILTER = "SELECT c.*,ct.type, ct.delete_at\n" +
+            "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+            "where ( c.name like ? or c.email like ? or c.address like ? ) and ct.id = ?\n" +
+            "order by %s %s\n" +
+            "limit ?,?;";
+    private static  String SQL_ADVANCE_CUSTOMER_TOTAL_FILTER = "SELECT count(*) as total \n" +
+            "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+            "where (c.name like ? or c.email like ? or c.address like ? ) and ct.id = ?";
     // Chinh kết nối DB: c0223g1_customer: DB, username, password
-
-
-
 
     @Override
     public List<Customer> findAll() {
@@ -65,6 +80,102 @@ public class CustomerServiceImplMySql extends DBContext implements ICustomerServ
             printSQLException(sqlException);
         }
         return customers;
+    }
+
+    @Override
+    public List<Customer> findAdvanced(Pageable pageable) {
+        List<Customer> customers  = new ArrayList<>();
+        String sql = "";
+        try {
+            Connection connection = getConnection();
+            // xử lý chỗ 'order by email asc'
+            if (pageable.getCustomerType() == -1) {
+                getAllCustomer(connection, customers,pageable);
+            }else{
+                getAllCustomerFilter(connection, customers, pageable);
+            }
+            connection.close();
+        } catch (SQLException sqlException) {
+            printSQLException(sqlException);
+        }
+        return customers;
+    }
+
+    private void getAllCustomerFilter(Connection connection, List<Customer> customers, Pageable pageable)throws SQLException {
+        String sql = "";
+        sql = String.format(SQL_ADVANCE_CUSTOMER_FILTER, pageable.getSortField(), pageable.getOrder());
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//            private static final String SQL_ADVANCE_CUSTOMER = "SELECT c.*,ct.type\n" +
+//                    "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+//                    "where c.name like ? or c.email like ? or c.address like ? and ct.id = ?\n" +
+//                    "order by %s %s\n" +
+//                    "limit ?,?;";
+        preparedStatement.setString(1, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(2, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(3, '%' + pageable.getKw() + '%');
+        preparedStatement.setInt(4, pageable.getCustomerType());
+
+        preparedStatement.setInt(5, (pageable.getPage() - 1) * pageable.getLimit());
+        preparedStatement.setInt(6, pageable.getLimit());
+        System.out.println("function findAdvanced: " + preparedStatement);
+
+        ResultSet rs = preparedStatement.executeQuery();
+        while (rs.next()) {
+            Customer c = getCustomerFromRs2(rs);
+            customers.add(c);
+        }
+        preparedStatement = connection.prepareStatement(SQL_ADVANCE_CUSTOMER_TOTAL_FILTER);
+//            private static final String SQL_ADVANCE_CUSTOMER_TOTAL = "SELECT count(*)\n" +
+//                    "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+//                    "where c.name like '%kw%' or c.email like '%kw%' or c.address like '%kw%' and ct.id = ?";
+        preparedStatement.setString(1, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(2, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(3, '%' + pageable.getKw() + '%');
+        preparedStatement.setInt(4, pageable.getCustomerType());
+        rs = preparedStatement.executeQuery();
+        while (rs.next()) {
+            int total = rs.getInt("total");
+            // total*1.0 để thành số thuc
+            // total: 8, limit: 3: 8/3 = 2 thì phải chuyển thành 8.0/3 để thành 2,66666
+            pageable.setTotalPage((int)Math.ceil(total*1.0 / pageable.getLimit()));
+        }
+    }
+
+    private void getAllCustomer(Connection connection, List<Customer> customers, Pageable pageable) throws SQLException {
+        String sql = "";
+        sql = String.format(SQL_ADVANCE_CUSTOMER, pageable.getSortField(), pageable.getOrder());
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+//            private static final String SQL_ADVANCE_CUSTOMER = "SELECT c.*,ct.type\n" +
+//                    "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+//                    "where c.name like ? or c.email like ? or c.address like ?\n" +
+//                    "order by ? ?\n" +
+//                    "limit ?,?;";
+        preparedStatement.setString(1, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(2, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(3, '%' + pageable.getKw() + '%');
+        preparedStatement.setInt(4, (pageable.getPage() - 1) * pageable.getLimit());
+        preparedStatement.setInt(5, pageable.getLimit());
+        System.out.println("function findAdvanced: " + preparedStatement);
+
+        ResultSet rs = preparedStatement.executeQuery();
+        while (rs.next()) {
+            Customer c = getCustomerFromRs2(rs);
+            customers.add(c);
+        }
+        preparedStatement = connection.prepareStatement(SQL_ADVANCE_CUSTOMER_TOTAL);
+//            private static final String SQL_ADVANCE_CUSTOMER_TOTAL = "SELECT count(*)\n" +
+//                    "FROM customers c left join customer_type ct on c.type_id = ct.id\n" +
+//                    "where c.name like '%kw%' or c.email like '%kw%' or c.address like '%kw%'";
+        preparedStatement.setString(1, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(2, '%' + pageable.getKw() + '%');
+        preparedStatement.setString(3, '%' + pageable.getKw() + '%');
+        rs = preparedStatement.executeQuery();
+        while (rs.next()) {
+            int total = rs.getInt("total");
+            // total*1.0 để thành số thuc
+            // total: 8, limit: 3: 8/3 = 2 thì phải chuyển thành 8.0/3 để thành 2,66666
+            pageable.setTotalPage((int)Math.ceil(total*1.0 / pageable.getLimit()));
+        }
     }
 
     private Customer getCustomerFromRs2(ResultSet rs) throws SQLException {

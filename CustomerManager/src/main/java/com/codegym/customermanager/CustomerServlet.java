@@ -2,6 +2,7 @@ package com.codegym.customermanager;
 
 import com.codegym.customermanager.model.Customer;
 import com.codegym.customermanager.model.CustomerType;
+import com.codegym.customermanager.model.Pageable;
 import com.codegym.customermanager.service.*;
 import com.codegym.customermanager.utils.ValidateUtils;
 
@@ -41,20 +42,50 @@ public class CustomerServlet extends HttpServlet {
                 showFromEdit(req, resp);
                 break;
             default:
-                System.out.println("Default............");
                 showCustomers(req, resp);
         }
 
     }
 
     private void showCustomers(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Customer> customers = iCustomerService.findAll2();
-//        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+        Pageable pageable = new Pageable();
+        inputPageable(req, pageable);
+        List<Customer> customers = iCustomerService.findAdvanced(pageable);
 
 
+        List<CustomerType> customerTypes = iCustomerType.getAllCustomerTypes();
+        req.setAttribute("pageable", pageable);
         req.setAttribute("customers", customers);
-//        req.setAttribute("customerTypes", customerTypes);
+        req.setAttribute("customerTypes", customerTypes);
         req.getRequestDispatcher(Config.URL_VIEW_ADMIN + "list.jsp").forward(req, resp);
+
+    }
+
+    private void inputPageable(HttpServletRequest req, Pageable pageable) {
+        if (req.getParameter("kw") != null) {
+            String kw = req.getParameter("kw");
+            pageable.setKw(kw);
+        }
+        if (req.getParameter("page") != null) {
+            int page = Integer.parseInt(req.getParameter("page"));
+            pageable.setPage(page);
+        }
+        if (req.getParameter("sortfield") != null) {
+            String sortField = req.getParameter("sortfield");
+            pageable.setSortField(sortField);
+        }
+        if (req.getParameter("order") != null) {
+            String order = req.getParameter("order");
+            pageable.setOrder(order);
+        }
+        if (req.getParameter("limit") != null) {
+           int limit = Integer.parseInt(req.getParameter("limit"));
+            pageable.setLimit(limit);
+        }
+        if (req.getParameter("customertype") != null) {
+            int customerType = Integer.parseInt(req.getParameter("customertype"));
+            pageable.setCustomerType(customerType);
+        }
 
     }
 
